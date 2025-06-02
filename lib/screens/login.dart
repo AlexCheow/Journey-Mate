@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 
@@ -58,10 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final email = query.docs.first['email'];
 
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        // Only call once
+        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: _passwordController.text.trim(),
         );
+
+        final uid = userCredential.user?.uid;
+        if (uid != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('uid', uid); // Save UID locally
+        }
 
         Navigator.pushReplacementNamed(context, '/home');
       } on FirebaseAuthException catch (e) {
@@ -73,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
