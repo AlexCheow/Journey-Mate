@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'PhotoTestScreen.dart';
 import 'home.dart';
 import 'history.dart';
 import 'record.dart';
@@ -22,6 +22,7 @@ class _MainNavigationState extends State<MainNavigation> {
     RecordScreen(),
     ClubsScreen(),
     ProfileScreen(),
+    PhotoTestScreen(),
   ];
 
   @override
@@ -40,6 +41,7 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(icon: Icon(Icons.fiber_manual_record), label: 'Record'),
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Clubs'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.photo), label: 'Test'),
         ],
       ),
     );

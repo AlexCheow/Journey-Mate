@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'provider/record_session_provider.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -20,6 +21,7 @@ void main() async {
         messagingSenderId: '489688680055',
         appId: '1:489688680055:web:1d6aed9de9cf682e4e6872',
         measurementId: 'G-KS7VTQHBXS',
+
       ),
     );
   } else {
