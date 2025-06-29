@@ -15,6 +15,7 @@
 
 
 
+
     <application
         android:label="journeymate"
         android:name="${applicationName}"

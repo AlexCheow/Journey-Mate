@@ -9,14 +9,22 @@ class RecordSessionProvider with ChangeNotifier {
   bool isRecording = false;
   List<LatLng> routePoints = [];
   List<Map<String, dynamic>> _pendingPhotos = [];
+  List<Map<String, dynamic>> _pendingVideos = []; // ✅ New
   LatLng? currentLocation;
   double totalDistance = 0.0;
   DateTime? _startTime;
   Duration _elapsed = Duration.zero;
   Timer? _timer;
   StreamSubscription<Position>? _positionStream;
+  String? _title; // ✅ Added
 
   DateTime? get startTime => _startTime;
+  String? get title => _title; // ✅ Getter
+
+  void setTitle(String value) {
+    _title = value;
+    notifyListeners();
+  }
 
   String get formattedDuration {
     final h = _elapsed.inHours.toString().padLeft(2, '0');
@@ -60,6 +68,7 @@ class RecordSessionProvider with ChangeNotifier {
     isRecording = true;
     routePoints.clear();
     _pendingPhotos.clear();
+    _pendingVideos.clear();
     totalDistance = 0.0;
     _elapsed = Duration.zero;
     _startTime = DateTime.now();
@@ -102,7 +111,15 @@ class RecordSessionProvider with ChangeNotifier {
     }
   }
 
+  void addLocalVideo(File video) { // ✅ New
+    if (currentLocation != null) {
+      _pendingVideos.add({'file': video, 'location': currentLocation!});
+      notifyListeners();
+    }
+  }
+
   List<Map<String, dynamic>> get localPhotos => _pendingPhotos;
+  List<Map<String, dynamic>> get localVideos => _pendingVideos; // ✅ New
 
   Future<List<Map<String, dynamic>>> uploadAllPhotos() async {
     final List<Map<String, dynamic>> result = [];
@@ -118,6 +135,26 @@ class RecordSessionProvider with ChangeNotifier {
         'lat': loc.latitude,
         'lng': loc.longitude,
         'imageUrl': url,
+      });
+    }
+
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> uploadAllVideos() async { // ✅ New
+    final List<Map<String, dynamic>> result = [];
+    final storage = FirebaseStorage.instance;
+
+    for (final v in _pendingVideos) {
+      final file = v['file'] as File;
+      final loc = v['location'] as LatLng;
+      final ref = storage.ref('session_videos/video_${DateTime.now().millisecondsSinceEpoch}.mp4');
+      await ref.putFile(file);
+      final url = await ref.getDownloadURL();
+      result.add({
+        'lat': loc.latitude,
+        'lng': loc.longitude,
+        'videoUrl': url,
       });
     }
 
