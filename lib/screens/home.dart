@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-//lib/screens/home.dart
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {

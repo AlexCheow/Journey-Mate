@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-//lib/provider/record_session_provider.dart
 import 'dart:async';
-
-=======
-import 'dart:async';
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
@@ -15,20 +9,13 @@ class RecordSessionProvider with ChangeNotifier {
   bool isRecording = false;
   List<LatLng> routePoints = [];
   List<Map<String, dynamic>> _pendingPhotos = [];
-<<<<<<< HEAD
-=======
   List<Map<String, dynamic>> _pendingVideos = []; // ✅ New
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   LatLng? currentLocation;
   double totalDistance = 0.0;
   DateTime? _startTime;
   Duration _elapsed = Duration.zero;
   Timer? _timer;
   StreamSubscription<Position>? _positionStream;
-<<<<<<< HEAD
-
-  DateTime? get startTime => _startTime;
-=======
   String? _title; // ✅ Added
 
   DateTime? get startTime => _startTime;
@@ -38,7 +25,6 @@ class RecordSessionProvider with ChangeNotifier {
     _title = value;
     notifyListeners();
   }
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 
   String get formattedDuration {
     final h = _elapsed.inHours.toString().padLeft(2, '0');
@@ -82,10 +68,7 @@ class RecordSessionProvider with ChangeNotifier {
     isRecording = true;
     routePoints.clear();
     _pendingPhotos.clear();
-<<<<<<< HEAD
-=======
     _pendingVideos.clear();
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
     totalDistance = 0.0;
     _elapsed = Duration.zero;
     _startTime = DateTime.now();
@@ -128,9 +111,6 @@ class RecordSessionProvider with ChangeNotifier {
     }
   }
 
-<<<<<<< HEAD
-  List<Map<String, dynamic>> get localPhotos => _pendingPhotos;
-=======
   void addLocalVideo(File video) { // ✅ New
     if (currentLocation != null) {
       _pendingVideos.add({'file': video, 'location': currentLocation!});
@@ -140,7 +120,6 @@ class RecordSessionProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> get localPhotos => _pendingPhotos;
   List<Map<String, dynamic>> get localVideos => _pendingVideos; // ✅ New
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 
   Future<List<Map<String, dynamic>>> uploadAllPhotos() async {
     final List<Map<String, dynamic>> result = [];
@@ -162,8 +141,6 @@ class RecordSessionProvider with ChangeNotifier {
     return result;
   }
 
-<<<<<<< HEAD
-=======
   Future<List<Map<String, dynamic>>> uploadAllVideos() async { // ✅ New
     final List<Map<String, dynamic>> result = [];
     final storage = FirebaseStorage.instance;
@@ -184,7 +161,6 @@ class RecordSessionProvider with ChangeNotifier {
     return result;
   }
 
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   @override
   void dispose() {
     _timer?.cancel();

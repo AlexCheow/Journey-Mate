@@ -1,12 +1,5 @@
-<<<<<<< HEAD
-//lib/screens/record.dart
 import 'dart:async';
 import 'dart:io';
-
-=======
-import 'dart:async';
-import 'dart:io';
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,10 +7,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-<<<<<<< HEAD
-
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import '../provider/record_session_provider.dart';
 
 class RecordScreen extends StatefulWidget {
@@ -28,11 +17,7 @@ class RecordScreen extends StatefulWidget {
 }
 
 class _RecordScreenState extends State<RecordScreen> {
-<<<<<<< HEAD
-  final ImagePicker _picker   = ImagePicker();
-=======
   final ImagePicker _picker = ImagePicker();
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   final MapController _mapCtl = MapController();
 
   @override
@@ -43,54 +28,6 @@ class _RecordScreenState extends State<RecordScreen> {
     });
   }
 
-<<<<<<< HEAD
-  // ───────── photo capture ───────────────────────────────────
-  Future<void> _capturePhoto() async {
-    //  Ⓐ  inside _capturePhoto()
-    final prov = context.read<RecordSessionProvider>();
-    final x    = await _picker.pickImage(source: ImageSource.camera);
-    if (x != null) prov.addLocalPhoto(File(x.path));      // use new name
-
-  }
-
-  // ───────── save session to Firestore ───────────────────────
-  Future<void> _saveSession() async {
-    final prov = context.read<RecordSessionProvider>();
-    final photos = await prov.uploadAllPhotos();
-    final user = FirebaseAuth.instance.currentUser; // ✅ get current user
-
-    if (user == null) return;
-
-    await FirebaseFirestore.instance.collection('sessions').add({
-      'userId': user.uid,
-      'startTime': prov.startTime?.toIso8601String(),
-      'duration': prov.formattedDuration,
-      'distance': (prov.totalDistance / 1000).toStringAsFixed(2),
-      'pace': prov.pace,
-      'route': prov.routePoints
-          .map((p) => {'lat': p.latitude, 'lng': p.longitude})
-          .toList(),
-      'photos': photos,
-    });
-  }
-
-
-  // ───────── stop & confirm ──────────────────────────────────
-  Future<void> _stopAndSave() async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title   : const Text('Stop recording?'),
-        content : const Text('Save this session to history?'),
-        actions : [
-          TextButton(onPressed: () => Navigator.pop(context,false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context,true ), child: const Text('Save')),
-        ],
-      ),
-    );
-    if (ok ?? false) {
-      context.read<RecordSessionProvider>().stopRecording();
-=======
   Future<void> _capturePhoto() async {
     final prov = context.read<RecordSessionProvider>();
     final x = await _picker.pickImage(source: ImageSource.camera);
@@ -159,15 +96,10 @@ class _RecordScreenState extends State<RecordScreen> {
       final prov = context.read<RecordSessionProvider>();
       prov.setTitle(title);
       prov.stopRecording();
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
       await _saveSession();
     }
   }
 
-<<<<<<< HEAD
-  // ───────── view photo dialog ───────────────────────────────
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   void _showPhoto(String url) {
     showDialog(
       context: context,
@@ -178,10 +110,6 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-<<<<<<< HEAD
-  // ────────── UI ─────────────────────────────────────────────
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   @override
   Widget build(BuildContext context) {
     final prov = context.watch<RecordSessionProvider>();
@@ -189,20 +117,12 @@ class _RecordScreenState extends State<RecordScreen> {
     return Scaffold(
       body: Stack(
         children: [
-<<<<<<< HEAD
-          // ---------- map ------------
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
           if (prov.currentLocation != null)
             FlutterMap(
               mapController: _mapCtl,
               options: MapOptions(
                 center: prov.currentLocation,
-<<<<<<< HEAD
-                zoom  : 16,
-=======
                 zoom: 20,
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
               ),
               children: [
                 TileLayer(
@@ -213,33 +133,13 @@ class _RecordScreenState extends State<RecordScreen> {
                   polylines: [
                     Polyline(
                       points: prov.routePoints,
-<<<<<<< HEAD
-                      color : Colors.blue,
-=======
                       color: Colors.blue,
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                       strokeWidth: 4,
                     )
                   ],
                 ),
                 MarkerLayer(
                   markers: [
-<<<<<<< HEAD
-                    // live position
-                    Marker(
-                      point : prov.currentLocation!,
-                      width : 40,
-                      height: 40,
-                      child : const Icon(Icons.my_location,
-                          color: Colors.red, size: 30),
-                    ),
-                    // photo markers
-                    ...prov.localPhotos.map((p) => Marker(
-                      point : p['location'],
-                      width : 35,
-                      height: 35,
-                      child : GestureDetector(
-=======
                     Marker(
                       point: prov.currentLocation!,
                       width: 40,
@@ -251,20 +151,16 @@ class _RecordScreenState extends State<RecordScreen> {
                       width: 35,
                       height: 35,
                       child: GestureDetector(
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                         onTap: () => _showPhoto(p['imageUrl']),
                         child: const Icon(Icons.camera_alt, color: Colors.purple),
                       ),
                     )),
-<<<<<<< HEAD
-=======
                     ...prov.localVideos.map((v) => Marker(
                       point: v['location'],
                       width: 35,
                       height: 35,
                       child: const Icon(Icons.videocam, color: Colors.deepOrange),
                     )),
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                   ],
                 ),
               ],
@@ -272,10 +168,6 @@ class _RecordScreenState extends State<RecordScreen> {
           else
             const Center(child: CircularProgressIndicator()),
 
-<<<<<<< HEAD
-          // ---------- recenter button -----------
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
           Positioned(
             top: 30,
             left: 20,
@@ -292,10 +184,6 @@ class _RecordScreenState extends State<RecordScreen> {
             ),
           ),
 
-<<<<<<< HEAD
-          // ---------- control panel --------------
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
           Positioned(
             bottom: 80,
             left: 20,
@@ -330,10 +218,6 @@ class _RecordScreenState extends State<RecordScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-<<<<<<< HEAD
-                      // start / stop
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
@@ -343,10 +227,6 @@ class _RecordScreenState extends State<RecordScreen> {
                         onPressed: prov.isRecording ? _stopAndSave : prov.startRecording,
                         child: Icon(prov.isRecording ? Icons.stop : Icons.play_arrow, size: 28),
                       ),
-<<<<<<< HEAD
-                      // photo
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
@@ -355,8 +235,6 @@ class _RecordScreenState extends State<RecordScreen> {
                         onPressed: prov.isRecording ? _capturePhoto : null,
                         child: const Icon(Icons.camera_alt, size: 28),
                       ),
-<<<<<<< HEAD
-=======
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
@@ -365,7 +243,6 @@ class _RecordScreenState extends State<RecordScreen> {
                         onPressed: prov.isRecording ? _recordVideo : null,
                         child: const Icon(Icons.videocam, size: 28),
                       ),
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
                     ],
                   ),
                 ],
