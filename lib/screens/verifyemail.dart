@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+//lib/screens/verifyemail.dart
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

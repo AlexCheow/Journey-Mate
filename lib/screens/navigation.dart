@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+//lib/screens/navigation.dart
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'package:flutter/material.dart';
 import 'PhotoTestScreen.dart';
 import 'home.dart';
@@ -5,7 +9,10 @@ import 'history.dart';
 import 'record.dart';
 import 'clubs.dart';
 import 'profile.dart';
+<<<<<<< HEAD
+=======
 import 'package:camera/camera.dart';
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
