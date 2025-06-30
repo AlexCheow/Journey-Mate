@@ -7,6 +7,7 @@ import 'clubs.dart';
 import 'profile.dart';
 import 'package:camera/camera.dart';
 
+
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
