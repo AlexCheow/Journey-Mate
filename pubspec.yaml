@@ -32,19 +32,6 @@ dependencies:
   image_picker: ^1.0.4
   camera: ^0.11.1
   path: ^1.9.0
-  flutter_map: ^6.1.0
-  latlong2: ^0.9.0
-  google_maps_flutter: ^2.12.2
-  universal_io: ^2.2.2
-  geolocator: ^10.1.0
-  geocoding: ^2.1.0
-  location: ^5.0.3
-  permission_handler: ^11.0.0
-
-  # Image Picker
-  image_picker: ^1.0.4
-  camera: ^0.10.5
-  path: ^1.9.0
 
   # Path Provider
   dio: ^5.4.0
@@ -53,10 +40,8 @@ dependencies:
   # Record in the background
   provider: ^6.1.1
 
-
   # Animated
   animate_do: ^4.2.0
-  animate_do: ^3.0.2
 
   # ✅ Video player
   video_player: ^2.8.7
