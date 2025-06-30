@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // ignore_for_file: use_build_context_synchronously
 //lib/screens/profile.dart
 // ignore_for_file: use_build_context_synchronously
@@ -9,6 +10,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,6 +31,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? userData;
   bool isEditing = false;
+<<<<<<< HEAD
   bool isSaving = false;
   final picker = ImagePicker();
   File? _newProfileImage;
@@ -27,6 +39,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final nameController = TextEditingController();
   final bioController = TextEditingController();
   final addressController = TextEditingController();
+=======
+  final picker = ImagePicker();
+  File? _newProfileImage;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  String theme = 'dark';
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   String unit = 'km';
 
   @override
@@ -46,6 +67,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           nameController.text = userData?['name'] ?? '';
           bioController.text = userData?['bio'] ?? '';
           addressController.text = userData?['address'] ?? '';
+<<<<<<< HEAD
+=======
+          theme = userData?['preferences']?['theme'] ?? 'dark';
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
           unit = userData?['preferences']?['units'] ?? 'km';
         });
       }
@@ -53,8 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveChanges() async {
+<<<<<<< HEAD
     if (!_formKey.currentState!.validate()) return;
     setState(() => isSaving = true);
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
     final prefs = await SharedPreferences.getInstance();
     final uid = prefs.getString('uid');
     if (uid == null) return;
@@ -64,18 +92,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'bio': bioController.text.trim(),
       'address': addressController.text.trim(),
       'preferences': {
+<<<<<<< HEAD
+=======
+        'theme': theme,
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
         'units': unit,
       }
     };
 
     if (_newProfileImage != null) {
+<<<<<<< HEAD
       final ref = FirebaseStorage.instance.ref().child('profile_pics/profile_$uid.jpg');
+=======
+      final fileName = 'profile_$uid.jpg';
+      final ref = FirebaseStorage.instance.ref().child('profile_pics/$fileName');
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
       await ref.putFile(_newProfileImage!);
       final photoUrl = await ref.getDownloadURL();
       updatedData['photoUrl'] = photoUrl;
     }
 
     await FirebaseFirestore.instance.collection('JourneyMate').doc(uid).update(updatedData);
+<<<<<<< HEAD
     setState(() {
       isEditing = false;
       isSaving = false;
@@ -84,10 +122,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('✅ Profile updated successfully!')),
     );
+=======
+    setState(() => isEditing = false);
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
     _fetchUserData();
   }
 
   Future<void> _pickImage() async {
+<<<<<<< HEAD
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       builder: (_) => SafeArea(
@@ -115,14 +157,128 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+=======
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _newProfileImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Profile"),
+        actions: [
+          if (!isEditing)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => setState(() => isEditing = true),
+            ),
+        ],
+      ),
+      body: userData == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: isEditing ? _pickImage : null,
+                child: CircleAvatar(
+                  radius: 55,
+                  backgroundImage: _newProfileImage != null
+                      ? FileImage(_newProfileImage!)
+                      : (userData?['photoUrl'] != null && userData!['photoUrl'] != ''
+                      ? NetworkImage(userData!['photoUrl'])
+                      : const AssetImage('assets/default_profile.png')) as ImageProvider,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildEditableField("Name", nameController, isEditing),
+              _buildEditableField("Bio", bioController, isEditing),
+              _buildEditableField("Address", addressController, isEditing),
+              _buildDropdown("Theme", ['light', 'dark'], theme, (val) => setState(() => theme = 'dark'), isEditing),
+              _buildDropdown("Units", ['km', 'mi'], unit, (val) => setState(() => unit = 'KM'), isEditing),
+              const SizedBox(height: 20),
+              if (isEditing)
+                ElevatedButton(
+                  onPressed: _saveChanges,
+                  child: const Text("Save Changes"),
+                ),
+              if (!isEditing)
+                TextButton(
+                  onPressed: () => _showChangeSensitiveDialog(context),
+                  child: const Text("Change email, phone, or password"),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditableField(String label, TextEditingController controller, bool editable) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        TextFormField(
+          controller: controller,
+          enabled: editable,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            filled: !editable,
+            fillColor: editable ? null : Colors.grey.shade200,
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildDropdown(String label, List<String> options, String selected, ValueChanged<String?>? onChanged, bool editable) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        DropdownButtonFormField<String>(
+          value: selected,
+          onChanged: editable ? onChanged : null,
+          items: options.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
   void _showChangeSensitiveDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Sensitive Info"),
+<<<<<<< HEAD
         content: const Text("Verify your identity to change email, phone, or password."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+=======
+        content: const Text("For security, you will need to verify your identity to change email, phone or password."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
           TextButton(
             onPressed: () {
               Navigator.pop(context);
@@ -134,6 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+<<<<<<< HEAD
 
   void _confirmLogout() {
     showDialog(
@@ -304,4 +461,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 }

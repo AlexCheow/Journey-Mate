@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 //lib/screens/PhotoTestScreen.dart
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

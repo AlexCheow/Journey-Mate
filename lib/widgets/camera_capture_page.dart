@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 //lib/widgets/camera_capture_page.dart
+=======
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';

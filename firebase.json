@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "flutter": {
     "platforms": {
@@ -30,3 +31,6 @@
     ]
   }
 }
+=======
+{"flutter":{"platforms":{"android":{"default":{"projectId":"journeymate-inti-3ad2d","appId":"1:489688680055:android:a1c5ad019429067c4e6872","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"journeymate-inti-3ad2d","configurations":{"android":"1:489688680055:android:a1c5ad019429067c4e6872","ios":"1:489688680055:ios:aad10d99e31045f84e6872","web":"1:489688680055:web:1d6aed9de9cf682e4e6872","windows":"1:489688680055:web:ef781825e82a2c594e6872"}}}}}}
+>>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
