@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "489688680055",
+    "project_id": "journeymate-inti-3ad2d",
+    "storage_bucket": "journeymate-inti-3ad2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489688680055:android:a1c5ad019429067c4e6872",
+        "android_client_info": {
+          "package_name": "com.example.journeymate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtaD59vItlylSC9IjgmxIL7ls8yCvPuLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

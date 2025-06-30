@@ -1,0 +1,65 @@
+name: journeymate
+description: A jogging app for route tracking and photo capture.
+publish_to: 'none'
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  shared_preferences: ^2.2.2
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.1.0
+
+  # ✅ Updated Firebase packages
+  firebase_core: ^3.13.1
+  firebase_auth: ^5.5.4
+  cloud_firestore: ^5.6.8
+  firebase_storage: ^12.4.6
+
+  #Map
+  flutter_map: ^6.2.1
+  latlong2: ^0.9.0
+  google_maps_flutter: ^2.12.2
+  universal_io: ^2.2.2
+  geolocator: ^14.0.1
+  geocoding: ^4.0.0
+  location: ^8.0.1
+  permission_handler: ^12.0.0+1
+
+  # Image Picker
+  image_picker: ^1.0.4
+  camera: ^0.11.1
+  path: ^1.9.0
+
+
+  # Record in the background
+  provider: ^6.1.1
+
+
+  # Animated
+  animate_do: ^4.2.0
+
+  # ✅ Video player
+  video_player: ^2.8.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/JourneyMate_Logo.png
+    - assets/Login_Background_Video.mp4
+    - assets/default_profile.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/JourneyMate_Logo.png"
+
+dependency_overrides:
+  location_platform_interface: 5.0.0
+
