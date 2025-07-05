@@ -1,9 +1,11 @@
+//lib/widgets/app.dart
 import 'package:flutter/material.dart';
 import 'package:journeymate/screens/navigation.dart';
 import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/verifyemail.dart';
 import 'screens/forgetpassword.dart';
+import 'screens/upcoming_events.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -17,6 +19,7 @@ class App extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const MainNavigation(),
+        '/upcoming-events': (context) => const UpcomingEventsPage(),
         '/signup': (context) => const SignUpScreen(),
         '/verify-email': (context) => const VerifyEmailScreen(),
         '/forget-password': (context) => const ForgetPasswordScreen(),

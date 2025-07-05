@@ -1,1 +1,1 @@
-//lib/clubs.dart
+//lib/widgets/club.dart

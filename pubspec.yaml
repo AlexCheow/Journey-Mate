@@ -56,6 +56,9 @@ flutter:
     - assets/JourneyMate_Logo.png
     - assets/Login_Background_Video.mp4
     - assets/default_profile.png
+    - assets/cycling.png
+    - assets/hiking.png
+    - assets/photography.png
 
 flutter_launcher_icons:
   android: true

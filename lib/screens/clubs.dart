@@ -1,4 +1,4 @@
-
+//lib/screens/clubs.dart
 import 'package:flutter/material.dart';
 
 class ClubsScreen extends StatelessWidget {
