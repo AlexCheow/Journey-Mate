@@ -146,27 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUpcomingEventsSection() {
-    final events = [
-      {
-        'title': 'Hiking Event',
-        'date': 'Aug 20, 2025',
-        'description': 'Join us for a fun hiking trip!',
-        'image': 'assets/hiking.png'
-      },
-      {
-        'title': 'Cycling Marathon',
-        'date': 'Sep 12, 2025',
-        'description': 'Test your endurance with fellow cyclists.',
-        'image': 'assets/cycling.png'
-      },
-      {
-        'title': 'Photography Walk',
-        'date': 'Oct 5, 2025',
-        'description': 'Capture nature\'s beauty.',
-        'image': 'assets/photography.png'
-      },
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -175,43 +154,57 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            final event = events[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/upcoming-events', arguments: event);
-              },
-              child: Card(
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                elevation: 4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                      child: Image.asset(event['image']!, height: 150, width: double.infinity, fit: BoxFit.cover),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(event['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 4),
-                          Text(event['date']!, style: const TextStyle(color: Colors.grey)),
-                          const SizedBox(height: 4),
-                          Text(event['description']!, style: const TextStyle(color: Colors.black87)),
-                        ],
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('upcoming_events')
+              .orderBy('date')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+            final events = snapshot.data!.docs;
+            if (events.isEmpty) return const Text('No upcoming events.');
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: events.length,
+              itemBuilder: (context, index) {
+                final event = events[index];
+                final date = (event['date'] as Timestamp).toDate();
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  elevation: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if ((event['imageUrl'] ?? '').isNotEmpty)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                          child: Image.network(
+                            event['imageUrl'],
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(event['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 4),
+                            Text(DateFormat.yMMMd().format(date), style: const TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 4),
+                            Text(event['description'] ?? '', style: const TextStyle(color: Colors.black87)),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                );
+              },
             );
           },
         ),

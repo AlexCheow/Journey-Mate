@@ -1,11 +1,8 @@
-//lib/screens/login.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
-
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,13 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
             .get();
 
         if (query.docs.isEmpty) {
-          throw FirebaseAuthException(
-              code: 'user-not-found', message: 'User not found');
+          throw FirebaseAuthException(code: 'user-not-found', message: 'User not found');
         }
 
         final email = query.docs.first['email'];
+        final uidInFirestore = query.docs.first.id;
 
-        // Only call once
+        // 使用邮箱+密码登录 Firebase Auth
         final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: _passwordController.text.trim(),
@@ -69,10 +66,18 @@ class _LoginScreenState extends State<LoginScreen> {
         final uid = userCredential.user?.uid;
         if (uid != null) {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('uid', uid); // Save UID locally
+          await prefs.setString('uid', uid); // 保存 UID
         }
 
-        Navigator.pushReplacementNamed(context, '/home');
+        // 根据 role 判断跳转
+        final userDoc = await FirebaseFirestore.instance.collection('JourneyMate').doc(uidInFirestore).get();
+        final role = userDoc['role'] ?? 'user';
+
+        if (role == 'admin') {
+          Navigator.pushReplacementNamed(context, '/admin-dashboard');
+        } else {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message ?? 'Login failed')),
@@ -83,11 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -159,7 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: (value) =>
                       value == null || value.length < 6 ? 'Enter valid password' : null,
                     ),
-
                     const SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,

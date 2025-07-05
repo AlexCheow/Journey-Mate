@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'PhotoTestScreen.dart';
 import 'home.dart';
 import 'history.dart';
 import 'record.dart';
 import 'clubs.dart';
 import 'profile.dart';
-import 'package:camera/camera.dart';
-
+import 'calendar_page.dart';
+import 'PhotoTestScreen.dart';
+import 'media_gallery.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -24,6 +24,8 @@ class _MainNavigationState extends State<MainNavigation> {
     RecordScreen(),
     ClubsScreen(),
     ProfileScreen(),
+    CalendarPage(),
+    MediaGalleryPage(),
     PhotoTestScreen(),
   ];
 
@@ -43,6 +45,8 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(icon: Icon(Icons.fiber_manual_record), label: 'Record'),
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Clubs'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
+          BottomNavigationBarItem(icon: Icon(Icons.photo_library), label: 'Gallery'),
           BottomNavigationBarItem(icon: Icon(Icons.photo), label: 'Test'),
         ],
       ),

@@ -1,6 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-//lib/screens/profile.dart
-// ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -115,26 +113,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showChangeSensitiveDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Sensitive Info"),
-        content: const Text("Verify your identity to change email, phone, or password."),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/account-security');
-            },
-            child: const Text("Continue"),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _confirmLogout() {
     showDialog(
       context: context,
@@ -222,11 +200,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Divider(height: 30),
                 _sectionHeader("Security", titleStyle),
                 TextButton.icon(
-                  icon: const Icon(Icons.lock_outline),
-                  onPressed: () => _showChangeSensitiveDialog(context),
-                  label: const Text("Change email, phone, or password"),
-                ),
-                TextButton.icon(
                   icon: const Icon(Icons.logout),
                   onPressed: _confirmLogout,
                   label: const Text("Logout"),
@@ -290,18 +263,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildDropdown(String label, List<String> options, String selected, ValueChanged<String?>? onChanged,
       bool editable, IconData icon, TextStyle labelStyle) {
     return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: DropdownButtonFormField<String>(
-            value: selected,
-            onChanged: editable ? onChanged : null,
-            items: options.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
-            decoration: InputDecoration(
-              labelText: label,
-              labelStyle: labelStyle,
-              prefixIcon: Icon(icon),
-              border: const OutlineInputBorder(),
-            ),
-            ),
-        );
-    }
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DropdownButtonFormField<String>(
+        value: selected,
+        onChanged: editable ? onChanged : null,
+        items: options.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: labelStyle,
+          prefixIcon: Icon(icon),
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
 }

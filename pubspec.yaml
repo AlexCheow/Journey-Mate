@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_fonts: ^6.1.0
+  table_calendar: ^3.0.9
 
   # ✅ Updated Firebase packages
   firebase_core: ^3.13.1
@@ -58,6 +59,8 @@ flutter:
     - assets/cycling.png
     - assets/hiking.png
     - assets/photography.png
+    - assets/video_placeholder.png
+
 
 flutter_launcher_icons:
   android: true
