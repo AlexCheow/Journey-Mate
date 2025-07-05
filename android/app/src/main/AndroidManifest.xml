@@ -8,21 +8,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<<<<<<< HEAD
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-=======
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-
-
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 53f304c196b69b67df568d758e51ad9b92d61f99
     <application
         android:label="journeymate"
         android:name="${applicationName}"
