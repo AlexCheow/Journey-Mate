@@ -39,23 +39,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         totalSessions = snapshot.docs.length;
-        totalDistance = snapshot.docs.fold(0.0, (sum, doc) =>
-        sum + (doc['distance'] != null ? (doc['distance'] as num?)?.toDouble() ?? 0.0 : 0.0));
+
+        totalDistance = snapshot.docs.fold(0.0, (sum, doc) {
+          final distanceStr = doc['distance']?.toString() ?? '0';
+          return sum + (double.tryParse(distanceStr) ?? 0.0);
+        });
+
         totalDuration = snapshot.docs.fold(Duration.zero, (sum, doc) {
           final durationStr = doc['duration'] ?? '00:00:00';
           final parts = durationStr.split(':').map(int.parse).toList();
           return sum + Duration(hours: parts[0], minutes: parts[1], seconds: parts[2]);
         });
+
         totalPhotos = snapshot.docs.fold(0, (sum, doc) => sum + ((doc['photos'] as List?)?.length ?? 0));
         totalVideos = snapshot.docs.fold(0, (sum, doc) => sum + ((doc['videos'] as List?)?.length ?? 0));
 
         for (var doc in snapshot.docs) {
-          final paceValue = double.tryParse(doc['pace']?.toString() ?? '0') ?? 0;
+          final paceStr = doc['pace']?.toString() ?? '0';
+          final paceValue = double.tryParse(paceStr) ?? 0;
           if (paceValue > 0) {
             paceSum += paceValue;
             paceCount++;
           }
         }
+
         averagePace = paceCount > 0 ? paceSum / paceCount : 0;
       });
     }
