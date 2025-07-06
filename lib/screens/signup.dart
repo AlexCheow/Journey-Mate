@@ -150,8 +150,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     FadeInDown(
                       duration: const Duration(milliseconds: 800),
                       child: Image.asset(
-                        'assets/JourneyMate_Logo.png',
-                        height: 140,
+                        'assets/JourneyMate1.png',
+                        height: 220,
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -200,21 +200,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: [
                         Flexible(
                           flex: 3,
-                          child: DropdownButtonFormField<String>(
-                            value: _selectedCountryCode,
-                            items: ['+60']
-                                .map((code) => DropdownMenuItem(
-                              value: code,
-                              child: Text(code, style: const TextStyle(color: Colors.black)),
-                            ))
-                                .toList(),
-                            onChanged: (val) => setState(() => _selectedCountryCode = val!),
-                            decoration: _inputDecoration('Code', Icons.flag),
+                          child: Container(
+                            height: 60, // fix height to avoid overflow
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedCountryCode,
+                              dropdownColor: Colors.black87, // optional: match your theme
+                              items: ['+60']
+                                  .map((code) => DropdownMenuItem(
+                                value: code,
+                                child: Text(code, style: const TextStyle(color: Colors.white)),
+                              ))
+                                  .toList(),
+                              onChanged: (val) => setState(() => _selectedCountryCode = val!),
+                              decoration: _inputDecoration('Code', Icons.flag).copyWith(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+
+                        const SizedBox(width: 6),
                         Flexible(
-                          flex: 7,
+                          flex: 5,
                           child: TextFormField(
                             controller: _phoneController,
                             style: const TextStyle(color: Colors.white),

@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +18,7 @@ class RecordScreen extends StatefulWidget {
 
 class _RecordScreenState extends State<RecordScreen> {
   final ImagePicker _picker = ImagePicker();
-  final MapController _mapController = MapController();
+  final MapController _mapCtl = MapController();
 
   @override
   void initState() {
@@ -30,108 +29,138 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Future<void> _capturePhoto() async {
-    final provider = context.read<RecordSessionProvider>();
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    if (image != null && provider.currentLocation != null) {
-      provider.addPhoto(File(image.path));
-    }
+    final prov = context.read<RecordSessionProvider>();
+    final x = await _picker.pickImage(source: ImageSource.camera);
+    if (x != null) prov.addLocalPhoto(File(x.path));
   }
 
-  Future<void> _saveSessionToFirestore() async {
-    final provider = context.read<RecordSessionProvider>();
+  Future<void> _recordVideo() async {
+    final prov = context.read<RecordSessionProvider>();
+    final x = await _picker.pickVideo(source: ImageSource.camera);
+    if (x != null) prov.addLocalVideo(File(x.path));
+  }
+
+  Future<void> _saveSession() async {
+    final prov = context.read<RecordSessionProvider>();
+    final photos = await prov.uploadAllPhotos();
+    final videos = await prov.uploadAllVideos();
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) return;
 
-    final sessionData = {
-      'userId': user.uid,
-      'startTime': provider.startTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
-      'duration': provider.formattedDuration,
-      'distance_km': (provider.totalDistance / 1000).toStringAsFixed(2),
-      'pace': provider.pace,
-      'route': provider.routePoints
-          .map((p) => {'lat': p.latitude, 'lng': p.longitude})
-          .toList(),
-      'photos': provider.photos
-          .map((p) => {
-        'lat': p['location'].latitude,
-        'lng': p['location'].longitude,
-        'path': p['image'].path,
-      })
-          .toList(),
-    };
-
-    await FirebaseFirestore.instance.collection('sessions').add(sessionData);
+    try {
+      await FirebaseFirestore.instance.collection('sessions').add({
+        'userId': user.uid,
+        'title': prov.title ?? 'Untitled Session',
+        'startTime': prov.startTime?.toIso8601String(),
+        'duration': prov.formattedDuration,
+        'distance': (prov.totalDistance / 1000).toStringAsFixed(2),
+        'pace': prov.pace,
+        'route': prov.routePoints
+            .map((p) => {'lat': p.latitude, 'lng': p.longitude})
+            .toList(),
+        'photos': photos,
+        'videos': videos,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Session saved successfully")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save session: $e")),
+      );
+    }
   }
 
-  void _handleStopRecording() async {
-    final confirm = await showDialog<bool>(
+  Future<void> _stopAndSave() async {
+    final title = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Stop Recording'),
-        content: const Text('Are you sure you want to stop and save this session?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+      builder: (context) {
+        final controller = TextEditingController();
+        return AlertDialog(
+          title: const Text('Stop and Save'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(labelText: 'Enter a title'),
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
+          ],
+        );
+      },
     );
 
-    if (confirm == true) {
-      context.read<RecordSessionProvider>().stopRecording();
-      await _saveSessionToFirestore();
+    if (title != null && title.isNotEmpty) {
+      final prov = context.read<RecordSessionProvider>();
+      prov.setTitle(title);
+      prov.stopRecording();
+      await _saveSession();
     }
+  }
+
+  void _showPhoto(String url) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        insetPadding: const EdgeInsets.all(20),
+        child: InteractiveViewer(child: Image.network(url)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<RecordSessionProvider>();
+    final prov = context.watch<RecordSessionProvider>();
 
     return Scaffold(
       body: Stack(
         children: [
-          if (provider.currentLocation != null)
+          if (prov.currentLocation != null)
             FlutterMap(
-              mapController: _mapController,
+              mapController: _mapCtl,
               options: MapOptions(
-                center: provider.currentLocation,
-                zoom: 16.0,
+                center: prov.currentLocation,
+                zoom: 20,
               ),
               children: [
                 TileLayer(
-                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
                 ),
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: provider.routePoints,
-                      strokeWidth: 4.0,
+                      points: prov.routePoints,
                       color: Colors.blue,
-                    ),
+                      strokeWidth: 4,
+                    )
                   ],
                 ),
                 MarkerLayer(
                   markers: [
                     Marker(
-                      point: provider.currentLocation!,
+                      point: prov.currentLocation!,
                       width: 40,
                       height: 40,
                       child: const Icon(Icons.my_location, color: Colors.red, size: 30),
                     ),
-                    ...provider.photos.map(
-                          (photo) => Marker(
-                        point: photo['location'],
-                        width: 30,
-                        height: 30,
+                    ...prov.localPhotos.map((p) => Marker(
+                      point: p['location'],
+                      width: 35,
+                      height: 35,
+                      child: GestureDetector(
+                        onTap: () => _showPhoto(p['imageUrl']),
                         child: const Icon(Icons.camera_alt, color: Colors.purple),
                       ),
-                    ),
+                    )),
+                    ...prov.localVideos.map((v) => Marker(
+                      point: v['location'],
+                      width: 35,
+                      height: 35,
+                      child: const Icon(Icons.videocam, color: Colors.deepOrange),
+                    )),
                   ],
                 ),
               ],
@@ -143,14 +172,14 @@ class _RecordScreenState extends State<RecordScreen> {
             top: 30,
             left: 20,
             child: FloatingActionButton(
-              onPressed: () {
-                if (provider.currentLocation != null) {
-                  _mapController.move(provider.currentLocation!, 16.0);
-                }
-              },
               mini: true,
               backgroundColor: Colors.white,
               foregroundColor: Colors.black87,
+              onPressed: () {
+                if (prov.currentLocation != null) {
+                  _mapCtl.move(prov.currentLocation!, 16);
+                }
+              },
               child: const Icon(Icons.my_location),
             ),
           ),
@@ -169,52 +198,50 @@ class _RecordScreenState extends State<RecordScreen> {
                     blurRadius: 10,
                     color: Colors.black26,
                     offset: Offset(0, 3),
-                  ),
+                  )
                 ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (provider.isRecording)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(children: [
-                            const Text('⏱ Time'),
-                            Text(provider.formattedDuration),
-                          ]),
-                          Column(children: [
-                            const Text('📏 Distance'),
-                            Text('${(provider.totalDistance / 1000).toStringAsFixed(2)} km'),
-                          ]),
-                          Column(children: [
-                            const Text('🏃 Pace'),
-                            Text(provider.pace),
-                          ]),
-                        ],
-                      ),
+                  if (prov.isRecording) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _stat('⏱ Time', prov.formattedDuration),
+                        _stat('📏 Dist', '${(prov.totalDistance / 1000).toStringAsFixed(2)} km'),
+                        _stat('🏃 Pace', prov.pace),
+                      ],
                     ),
+                    const SizedBox(height: 12),
+                  ],
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: provider.isRecording ? _handleStopRecording : provider.startRecording,
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(20),
-                          backgroundColor: provider.isRecording ? Colors.red : Colors.green,
+                          backgroundColor: prov.isRecording ? Colors.red : Colors.green,
                         ),
-                        child: Icon(provider.isRecording ? Icons.stop : Icons.play_arrow, size: 30),
+                        onPressed: prov.isRecording ? _stopAndSave : prov.startRecording,
+                        child: Icon(prov.isRecording ? Icons.stop : Icons.play_arrow, size: 28),
                       ),
                       ElevatedButton(
-                        onPressed: provider.isRecording ? _capturePhoto : null,
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(20),
                         ),
-                        child: const Icon(Icons.camera_alt, size: 30),
+                        onPressed: prov.isRecording ? _capturePhoto : null,
+                        child: const Icon(Icons.camera_alt, size: 28),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
+                        ),
+                        onPressed: prov.isRecording ? _recordVideo : null,
+                        child: const Icon(Icons.videocam, size: 28),
                       ),
                     ],
                   ),
@@ -226,4 +253,11 @@ class _RecordScreenState extends State<RecordScreen> {
       ),
     );
   }
+
+  Widget _stat(String label, String value) => Column(
+    children: [
+      Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      Text(value),
+    ],
+  );
 }
